@@ -10,7 +10,7 @@ Designed, routed, and documented using **KiCad 9.0**.
 
 * **Custom 2-Layer PCB Shield:** Designed a custom PCB in KiCad that plugs directly onto an Arduino Uno R3, featuring optimized ground pours, clean trace routing, and 2.54mm pitch through-hole component footprints.
 * **Diode-OR Hardware Interrupt Circuit:** Bypasses hardware pin constraints on the ATmega328P by multiplexing 4 active-high pushbuttons into a single interrupt pin (`Digital Pin 2`) using 1N4148 switching diodes.
-* **Real-Time Input Polling:** Uses analog pins (`A2–A5`) as digital inputs with 10k$\Omega$ pull-down resistors to instantly decode button presses after triggering the ISR.
+* **Real-Time Input Polling:** Uses analog pins (`A2–A5`) as digital inputs with 10k Ohm pull-down resistors to instantly decode button presses after triggering the ISR.
 * **Dynamic Song Interruption:** Firmware regularly checks an interrupt flag during song playback loops to provide instantaneous song cancellation and input switching.
 * **Tone-to-Color RGB Mapping:** Embedded C++ data structures map 27 chromatic note frequencies to 24-bit RGB values, creating custom visual lighting effects synced to audio pitch.
 * **Analog Volume & Brightness Control:** Potentiometer voltage divider dynamically scales piezo speaker drive voltage and audio output levels.
@@ -36,10 +36,10 @@ Designed, routed, and documented using **KiCad 9.0**.
 | Component | Arduino Pin | Circuit Function |
 | :--- | :--- | :--- |
 | **Diode-OR Interrupt Line** | `Digital Pin 2 (INT0)` | Common hardware interrupt trigger from all 4 buttons |
-| **Blue Active LED** | `Digital Pin 6` | Status indicator (220$\Omega$ current limiting) |
-| **Yellow Active LED** | `Digital Pin 7` | Status indicator (220$\Omega$ current limiting) |
-| **Red Active LED** | `Digital Pin 8` | Status indicator (220$\Omega$ current limiting) |
-| **Green Active LED** | `Digital Pin 9` | Status indicator (220$\Omega$ current limiting) |
+| **Blue Active LED** | `Digital Pin 6` | Status indicator (220 Ohms current limiting) |
+| **Yellow Active LED** | `Digital Pin 7` | Status indicator (220 Ohms current limiting) |
+| **Red Active LED** | `Digital Pin 8` | Status indicator (220 Ohms current limiting) |
+| **Green Active LED** | `Digital Pin 9` | Status indicator (220 Ohms current limiting) |
 | **RGB LED (Red/Green/Blue)** | `Digital Pins 11, 12, 13` | Frequency-synced chromatic lighting display |
 | **Potentiometer & Buzzer** | `Analog Pin A0` | Wiper analog reference and piezo speaker driver |
 | **Green Pushbutton Sense** | `Analog Pin A2` | Song 1 selection input |
