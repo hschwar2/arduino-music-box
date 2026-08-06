@@ -1,58 +1,79 @@
-# Arduino Multi-Button Interactive Music Box
+# Arduino Interactive Music Box & Custom PCB Shield
 
-**Author:** Heather Schwartz  
-**Course:** EE 10200  
+A complete embedded hardware and firmware system built around the ATmega328P (Arduino Uno R3) platform. This project features a custom-designed 2-layer PCB shield, real-time song switching via dynamic loop interrupts, tone-synced 24-bit RGB lighting, diode-OR hardware logic, and dynamic potentiometer audio scaling
 
-An Arduino-powered interactive jukebox featuring a custom diode-OR hardware interrupt circuit, real-time volume/brightness analog control, and dynamic RGB light shows mapped directly to note frequencies across a chromatic scale.
-
----
-
-## Technical Highlights
-
-- **Hardware Interrupt Trick:** Overcame the Arduino Uno's 2-interrupt pin limit by combining a 4-button **diode-OR logic gate** into a single interrupt pin (`Pin 2`) while polling individual analog pins (`A2–A5`) to decode active inputs.
-- **Tone-to-Color Frequency Mapping:** Implemented custom C++ `struct` definitions to bind 27 chromatic note frequencies directly to 24-bit RGB values, creating an intuitive visual representation of musical pitch.
-- **Real-Time Dynamic Analog Scaling:** Single potentiometer voltage divider configuration concurrently adjusts piezo volume and dynamically scales RGB LED PWM brightness percentages.
+Designed, routed, and documented using **KiCad 9.0**.
 
 ---
 
-## Hardware Architecture & Circuitry
+## Key Technical Features
 
-### Key Components
-- **Microcontroller:** Arduino Uno R3
-- **Sensors & Input:** 4x Pushbuttons, 1x 10kΩ Potentiometer (Analog Input)
-- **Actuators & Display:** 1x Piezo Buzzer, 1x Common-Cathode RGB LED, 4x Indicator LEDs
-- **Discrete Electronics:** 4x Diodes (Interrupt OR-Logic), 4x 220Ω Current-Limiting Resistors, 4x 10kΩ Pull-down Resistors
+* **Custom 2-Layer PCB Shield:** Designed a custom PCB in KiCad that plugs directly onto an Arduino Uno R3, featuring optimized ground pours, clean trace routing, and 2.54mm pitch through-hole component footprints.
+* **Diode-OR Hardware Interrupt Circuit:** Bypasses hardware pin constraints on the ATmega328P by multiplexing 4 active-high pushbuttons into a single interrupt pin (`Digital Pin 2`) using 1N4148 switching diodes.
+* **Real-Time Input Polling:** Uses analog pins (`A2–A5`) as digital inputs with 10k$\Omega$ pull-down resistors to instantly decode button presses after triggering the ISR.
+* **Dynamic Song Interruption:** Firmware regularly checks an interrupt flag during song playback loops to provide instantaneous song cancellation and input switching.
+* **Tone-to-Color RGB Mapping:** Embedded C++ data structures map 27 chromatic note frequencies to 24-bit RGB values, creating custom visual lighting effects synced to audio pitch.
+* **Analog Volume & Brightness Control:** Potentiometer voltage divider dynamically scales piezo speaker drive voltage and audio output levels.
 
-### Circuit Diagram & Physical Setup
-| Schematic | Physical Breadboard |
-| :---: | :---: |
-| ![Schematic](docs/kicad-schematic-photo.jpg) | ![Breadboard Photo](docs/breadboard-photo.jpg) |
+---
 
-### Pin Map
-| Component / Function | Arduino Pin | Circuit Type |
+## Hardware Architecture & Design
+
+### Breadboard Concept
+![Arduino Music Box Schematic](docs/breadboard-photo.jpg)
+### Schematic Capture
+![Arduino Music Box Schematic](docs/kicad-schematic-photo.jpg)
+
+### 3D PCB Layout
+![Arduino Music Box 3D PCB Render](docs/music-box-3d-rendering.png)
+
+* **[View KiCad 9.0 Project Files](hardware/)**
+
+---
+
+## Pin Mapping & Component Specification
+
+| Component | Arduino Pin | Circuit Function |
 | :--- | :--- | :--- |
-| **Interrupt Trigger** | `Pin 2` | Digital Input (RISING, Diode Bus) |
-| **Button Inputs (Blue / Yellow / Red / Green)** | `A5`, `A4`, `A3`, `A2` | Analog Input (>500 Threshold) |
-| **Indicator LEDs (Blue / Yellow / Red / Green)** | `Pin 6`, `Pin 7`, `Pin 8`, `Pin 9` | Digital Output (220Ω Resistors) |
-| **RGB LED (Red / Green / Blue)** | `Pin 11`, `Pin 12`, `Pin 13` | PWM Output |
-| **Potentiometer & Piezo Volume Control** | `A0` | Analog Input (Voltage Divider) |
+| **Diode-OR Interrupt Line** | `Digital Pin 2 (INT0)` | Common hardware interrupt trigger from all 4 buttons |
+| **Blue Active LED** | `Digital Pin 6` | Status indicator (220$\Omega$ current limiting) |
+| **Yellow Active LED** | `Digital Pin 7` | Status indicator (220$\Omega$ current limiting) |
+| **Red Active LED** | `Digital Pin 8` | Status indicator (220$\Omega$ current limiting) |
+| **Green Active LED** | `Digital Pin 9` | Status indicator (220$\Omega$ current limiting) |
+| **RGB LED (Red/Green/Blue)** | `Digital Pins 11, 12, 13` | Frequency-synced chromatic lighting display |
+| **Potentiometer & Buzzer** | `Analog Pin A0` | Wiper analog reference and piezo speaker driver |
+| **Green Pushbutton Sense** | `Analog Pin A2` | Song 1 selection input |
+| **Red Pushbutton Sense** | `Analog Pin A3` | Song 2 selection input |
+| **Yellow Pushbutton Sense** | `Analog Pin A4` | Song 3 selection input |
+| **Blue Pushbutton Sense** | `Analog Pin A5` | Song 4 selection input |
 
 ---
 
-## Software Design
+## Circuit & PCB Engineering Highlights
 
-### Data Structures
-To synchronize pitch and visuals without hardcoding color values across melodies, notes are defined using custom C-structures:
+### Diode-OR Hardware Interrupt
+Standard ATmega328P microcontrollers feature only two external hardware interrupt pins (`INT0` on Pin 2 and `INT1` on Pin 3). To handle 4 independent pushbutton inputs without continuous software polling, four 1N4148 diodes form a diode-OR logic gate:
+
+1. Pressing any button routes current through its respective diode to pull `Digital Pin 2` `HIGH`.
+2. An **Interrupt Service Routine (ISR)** triggers on the rising edge.
+3. The MCU polls lines `A2–A5` to identify which specific button was pressed.
+
+### PCB Layout Considerations
+* **Board Dimensions:** Form-factor matches standard Arduino Uno R3 header dimensions ($68.6\text{ mm} \times 53.4\text{ mm}$).
+* **Ground Pours:** Top and bottom layers utilize solid Ground Planes ($\text{GND}$) for return paths and noise reduction.
+* **Trace Parameters:** Signal traces routed at 0.25 mm width; power rails ($5\text{V}$, $\text{GND}$) widened to 0.5 mm for power delivery.
+
+---
+
+## Firmware Architecture
+
+The C++ firmware is built using custom structs that bundle note frequencies, durations, and RGB color vectors:
 
 ```cpp
 struct Note {
-  int freq; // Tone frequency in Hz
-  int r;    // Red PWM value (0-255)
-  int g;    // Green PWM value (0-255)
-  int b;    // Blue PWM value (0-255)
-};
-
-struct MelodyStep {
-  Note note;
-  int duration; // Note duration in ms
+  int frequency;  // Hz
+  int duration;   // ms
+  byte red;       // 0-255 PWM
+  byte green;     // 0-255 PWM
+  byte blue;      // 0-255 PWM
 };
