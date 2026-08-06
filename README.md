@@ -8,7 +8,7 @@ Designed, routed, and documented using **KiCad 9.0**.
 
 ## Key Technical Features
 
-* **Custom 2-Layer PCB Shield:** Designed a custom PCB in KiCad that plugs directly onto an Arduino Uno R3, featuring optimized ground pours, clean trace routing, and 2.54mm pitch through-hole component footprints.
+* **Custom 2-Layer PCB Shield:** Designed a custom PCB in KiCad that plugs directly onto an Arduino Uno R3, featuring optimized ground pours, clean trace routing, and through-hole component footprints.
 * **Diode-OR Hardware Interrupt Circuit:** Bypasses hardware pin constraints on the ATmega328P by multiplexing 4 active-high pushbuttons into a single interrupt pin (`Digital Pin 2`) using 1N4148 switching diodes.
 * **Real-Time Input Polling:** Uses analog pins (`A2–A5`) as digital inputs with 10k Ohm pull-down resistors to instantly decode button presses after triggering the ISR.
 * **Dynamic Song Interruption:** Firmware regularly checks an interrupt flag during song playback loops to provide instantaneous song cancellation and input switching.
