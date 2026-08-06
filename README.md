@@ -22,7 +22,7 @@ Designed, routed, and documented using **KiCad 9.0**.
 ### Breadboard Concept
 ![Arduino Music Box Schematic](docs/breadboard-photo.jpg)
 ### Schematic Capture
-![Arduino Music Box Schematic](docs/kicad-schematic-photo.jpg)
+![Arduino Music Box Schematic](docs/schematic-photo.png)
 
 ### 3D PCB Layout
 ![Arduino Music Box 3D PCB Render](docs/music-box-3d-rendering.png)
