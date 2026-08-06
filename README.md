@@ -26,7 +26,7 @@ An Arduino-powered interactive jukebox featuring a custom diode-OR hardware inte
 ### Circuit Diagram & Physical Setup
 | Schematic | Physical Breadboard |
 | :---: | :---: |
-| ![Schematic](docs/schematic.jpg) | ![Breadboard Photo](docs/breadboard-photo.jpg) |
+| ![Schematic](docs/kicad-schematic-photo.jpg) | ![Breadboard Photo](docs/breadboard-photo.jpg) |
 
 ### Pin Map
 | Component / Function | Arduino Pin | Circuit Type |
